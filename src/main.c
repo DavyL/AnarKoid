@@ -3,16 +3,20 @@
 
 #include <GL/glut.h>
 
+#include "common.h"
 #include "draw.h"
 
 int firstPass = 1; 
 int time = 0;
 
+struct screenInfo screen;
+
 void Refresh(void){
 	glClear(GL_COLOR_BUFFER_BIT);	// Effacer la surface graphique
 
 	if (firstPass) {
-		glColor3f(0, 0, 1.0);  // Encre bleue au départ
+		screen = getScreenInfo(screen);
+		displayScreenInfo(screen);	
 		firstPass = 0;
 	}
 
@@ -21,7 +25,6 @@ void Refresh(void){
 	__glDrawSquare(200, 200, 50+time);	
 	glFlush(); 			
 }
-
 void Keyboard(unsigned char key, int x, int y){
 	switch(key){ 
 		case 'q' : exit(0); 

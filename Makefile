@@ -169,6 +169,33 @@ anarkoid/fast:
 	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/build
 .PHONY : anarkoid/fast
 
+src/common.o: src/common.c.o
+
+.PHONY : src/common.o
+
+# target to build an object file
+src/common.c.o:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/common.c.o
+.PHONY : src/common.c.o
+
+src/common.i: src/common.c.i
+
+.PHONY : src/common.i
+
+# target to preprocess a source file
+src/common.c.i:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/common.c.i
+.PHONY : src/common.c.i
+
+src/common.s: src/common.c.s
+
+.PHONY : src/common.s
+
+# target to generate assembly for a file
+src/common.c.s:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/common.c.s
+.PHONY : src/common.c.s
+
 src/draw.o: src/draw.c.o
 
 .PHONY : src/draw.o
@@ -236,6 +263,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... install/local"
 	@echo "... install"
+	@echo "... src/common.o"
+	@echo "... src/common.i"
+	@echo "... src/common.s"
 	@echo "... src/draw.o"
 	@echo "... src/draw.i"
 	@echo "... src/draw.s"
