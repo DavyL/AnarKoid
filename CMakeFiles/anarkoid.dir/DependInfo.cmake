@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/sf/Prog/AnarKoid/src/draw.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/draw.c.o"
   "/home/sf/Prog/AnarKoid/src/main.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")

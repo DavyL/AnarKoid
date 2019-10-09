@@ -6,3 +6,15 @@
 
 #IncludeRegexTransform: 
 
+/home/sf/Prog/AnarKoid/src/draw.h
+
+/home/sf/Prog/AnarKoid/src/main.c
+stdio.h
+-
+stdlib.h
+-
+GL/glut.h
+-
+draw.h
+/home/sf/Prog/AnarKoid/src/draw.h
+
