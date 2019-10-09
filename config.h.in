@@ -1,0 +1,8 @@
+#ifndef ANARKOID_CONFIG_H
+#define ANARKOID_CONFIG_H
+
+#define VERSION_MAJOR @AnarKoid_VERSION_MAJOR@
+#define VERSION_MINOR @AnarKoid_VERSION_MINOR@
+
+#endif
+
