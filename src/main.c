@@ -7,7 +7,9 @@
 #include "draw.h"
 
 int firstPass = 1; 
-int time = 0;
+int previousTime = 0;
+
+int refreshCount = 0;
 
 struct screenInfo screen;
 
@@ -20,9 +22,9 @@ void Refresh(void){
 		firstPass = 0;
 	}
 
-	fprintf(stdout, "time : \t %d \n", time++);
+	fprintf(stdout, "refresh : \t %d \n", refreshCount++);
 
-	__glDrawSquare(200, 200, 50+time);	
+	//__glDrawSquare(200, 200, 50+time);	
 	glFlush(); 			
 }
 void Keyboard(unsigned char key, int x, int y){
@@ -32,7 +34,10 @@ void Keyboard(unsigned char key, int x, int y){
 
 	Refresh();
 }
-
+void idleFunc( void );
+void idleFunc( void ){
+	__glDrawSquare(200, 200, 50+(previousTime++));	
+}
 int main(int argc, char *argv[]){
 	int win; 		
 	glutInit(&argc, argv); 
