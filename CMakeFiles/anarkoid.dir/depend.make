@@ -3,11 +3,14 @@
 
 CMakeFiles/anarkoid.dir/src/common.c.o: src/common.c
 CMakeFiles/anarkoid.dir/src/common.c.o: src/common.h
+CMakeFiles/anarkoid.dir/src/common.c.o: src/util.h
 
 CMakeFiles/anarkoid.dir/src/draw.c.o: src/draw.c
 CMakeFiles/anarkoid.dir/src/draw.c.o: src/draw.h
 
 CMakeFiles/anarkoid.dir/src/main.c.o: src/common.h
-CMakeFiles/anarkoid.dir/src/main.c.o: src/draw.h
 CMakeFiles/anarkoid.dir/src/main.c.o: src/main.c
+CMakeFiles/anarkoid.dir/src/main.c.o: src/util.h
+
+CMakeFiles/anarkoid.dir/src/util.c.o: src/util.c
 

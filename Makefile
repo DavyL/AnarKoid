@@ -250,6 +250,33 @@ src/main.c.s:
 	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/main.c.s
 .PHONY : src/main.c.s
 
+src/util.o: src/util.c.o
+
+.PHONY : src/util.o
+
+# target to build an object file
+src/util.c.o:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/util.c.o
+.PHONY : src/util.c.o
+
+src/util.i: src/util.c.i
+
+.PHONY : src/util.i
+
+# target to preprocess a source file
+src/util.c.i:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/util.c.i
+.PHONY : src/util.c.i
+
+src/util.s: src/util.c.s
+
+.PHONY : src/util.s
+
+# target to generate assembly for a file
+src/util.c.s:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/util.c.s
+.PHONY : src/util.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -272,6 +299,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/util.o"
+	@echo "... src/util.i"
+	@echo "... src/util.s"
 .PHONY : help
 
 

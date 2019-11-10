@@ -45,6 +45,7 @@ endforeach()
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
+find_package(GLEW REQUIRED)
 #find_package(ICU COMPONENTS i18n io REQUIRED)
 #find_package(CURL REQUIRED)
 #find_package(LibXml2 REQUIRED)
@@ -62,6 +63,7 @@ include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/lib/include"
 	             "${CMAKE_CURRENT_BINARY_DIR}"
 		     ${OPENGL_INCLUDE_DIRS}
 		     ${GLUT_INCLUDE_DIRS}
+		     ${GLEW_INCLUDE_DIRS}
 		     )
 
 # link_directories( "${VISION_LIBRARY_DIR}" )
@@ -77,6 +79,7 @@ add_executable( "anarkoid" ${src} ${hdr} )
 target_link_libraries( "anarkoid" m	
 	${OPENGL_LIBRARIES}
 	${GLUT_LIBRARY}
+	${GLEW_LIBRARIES}
 	)
 
 install( TARGETS "anarkoid"

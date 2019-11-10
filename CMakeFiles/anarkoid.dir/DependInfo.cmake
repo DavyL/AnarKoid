@@ -7,6 +7,7 @@ set(CMAKE_DEPENDS_CHECK_C
   "/home/sf/Prog/AnarKoid/src/common.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/common.c.o"
   "/home/sf/Prog/AnarKoid/src/draw.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/draw.c.o"
   "/home/sf/Prog/AnarKoid/src/main.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/main.c.o"
+  "/home/sf/Prog/AnarKoid/src/util.c" "/home/sf/Prog/AnarKoid/CMakeFiles/anarkoid.dir/src/util.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
