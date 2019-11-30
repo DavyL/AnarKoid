@@ -14,6 +14,8 @@ void square_render(int);
 
 GLuint VBO[2];
 GLuint VAO[2];
+GLuint shader_bricks;
+GLuint shader_scale;
 GLuint scale_location;
 
 int firstPass = 1; 
@@ -68,39 +70,75 @@ void add_shader(GLuint shader_program, const char * shader_file, GLenum shader_t
 
 }
 
-void compile_shaders(){
+void compile_shaders_scale(){
 	
-	GLuint shader_program = glCreateProgram();
-	if(shader_program ==0){
+	shader_scale = glCreateProgram();
+	if(shader_scale ==0){
 		fprintf(stderr, "Error while creating shader program.\n");
 		exit(1);
 	}
 	
-	add_shader(shader_program, "src/shader.v.glsl", GL_VERTEX_SHADER);
-	add_shader(shader_program, "src/shader.f.glsl", GL_FRAGMENT_SHADER);
+	add_shader(shader_scale, "src/shader.v.glsl", GL_VERTEX_SHADER);
+	add_shader(shader_scale, "src/shader.f.glsl", GL_FRAGMENT_SHADER);
 
 	GLint success = 0;
 	GLchar error_log[1024] = { 0};
 
-	glLinkProgram(shader_program);
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+	glLinkProgram(shader_scale);
+	glGetProgramiv(shader_scale, GL_LINK_STATUS, &success);
 	if(!success){
-		glGetShaderInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+		glGetShaderInfoLog(shader_scale, sizeof(error_log), NULL, error_log);
 		fprintf(stderr, "Error linking shader program : %s\n", error_log);
 		exit(1);
 	}
 
-	glValidateProgram(shader_program);
-	glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
+	glValidateProgram(shader_scale);
+	glGetProgramiv(shader_scale, GL_VALIDATE_STATUS, &success);
 	if(!success){
-		glGetShaderInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+		glGetShaderInfoLog(shader_scale, sizeof(error_log), NULL, error_log);
 		fprintf(stderr, "Invalidshader program : %s\n", error_log);
 		exit(1);
 	}
 
-	glUseProgram(shader_program);
+	glUseProgram(shader_scale);
 
-	scale_location = glGetUniformLocation(shader_program, "g_scale");
+	scale_location = glGetUniformLocation(shader_scale, "g_scale");
+}
+
+
+void compile_shaders_bricks(){
+	
+	shader_bricks = glCreateProgram();
+	if(shader_bricks ==0){
+		fprintf(stderr, "Error while creating shader program.\n");
+		exit(1);
+	}
+	
+	add_shader(shader_bricks, "src/shader.v.glsl", GL_VERTEX_SHADER);
+	add_shader(shader_bricks, "src/sh_bricks.f.glsl", GL_FRAGMENT_SHADER);
+
+	GLint success = 0;
+	GLchar error_log[1024] = { 0};
+
+	glLinkProgram(shader_bricks);
+	glGetProgramiv(shader_bricks, GL_LINK_STATUS, &success);
+	if(!success){
+		glGetShaderInfoLog(shader_bricks, sizeof(error_log), NULL, error_log);
+		fprintf(stderr, "Error linking shader program : %s\n", error_log);
+		exit(1);
+	}
+
+	glValidateProgram(shader_bricks);
+	glGetProgramiv(shader_bricks, GL_VALIDATE_STATUS, &success);
+	if(!success){
+		glGetShaderInfoLog(shader_bricks, sizeof(error_log), NULL, error_log);
+		fprintf(stderr, "Invalidshader program : %s\n", error_log);
+		exit(1);
+	}
+
+	glUseProgram(shader_bricks);
+
+	scale_location = glGetUniformLocation(shader_bricks, "g_scale");
 }
 
    
@@ -111,6 +149,8 @@ void compile_shaders(){
 }
 //Creating the VBO for a triangle (3 vertices)
 void create_triangle_vertex_buffer( float * vertices){
+
+	glUniform1f(scale_location, cosf(scale));
 
 	glGenBuffers(1, &(VBO[0]));
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);	//VBO containing an array of vertices
@@ -133,26 +173,32 @@ void create_std_rectangle_vertex_buffer(){
 
 	//Feeding the VBO
 	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), vertices, GL_STATIC_DRAW);
+	
 	glGenVertexArrays(1, &(VAO[1]));
 	glBindVertexArray(VAO[1]);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	
 }
 void triangle_render(int index){
 
-	glBindVertexArray(VAO[0]);
+	glUseProgram(shader_bricks);
+	glBindVertexArray(VAO[0]);	
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+	//glUseProgram(0);
 }
 
 void square_render(int index){
 
 	scale +=0.01f;
-
 	glUniform1f(scale_location, cosf(scale));
 
+	glUseProgram(shader_bricks);
 	glBindVertexArray(VAO[1]);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glUseProgram(0);
 }
 void idle_func( void );
 void idle_func( void ){
@@ -164,8 +210,8 @@ void idle_func( void ){
 
 	glBindVertexArray(0);	
 	//We disable as we no longer immediately need the VBO
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
 
 	glutSwapBuffers();
 
@@ -207,7 +253,8 @@ int main(int argc, char *argv[]){
 	glClearColor(0.0f, 1.0f, 1.0f, 0.0f); 			
 
 	init_buffers();
-	compile_shaders();
+	compile_shaders_bricks();
+	compile_shaders_scale();
 
 	glutMainLoop();					
 
