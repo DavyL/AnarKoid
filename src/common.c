@@ -12,6 +12,32 @@ extern const GLfloat g_vertex_buffer_data[8];
 extern const GLushort g_element_buffer_data[4];
 
 extern struct resource g_resources;
+extern struct resource square_resource;
+float * get_square_vertices(float * vertices, float center, float width){
+
+	if(vertices !=NULL)
+		free(vertices);
+
+	vertices = malloc(sizeof(float)*8);
+	vertices[0] = 	center - width;	vertices[1] = 	center - width;
+	vertices[2] =   center - width;	vertices[3] =  	center + width;
+	vertices[4] = 	center + width;	vertices[5] = 	center - width;
+	vertices[6] = 	center + width;	vertices[7] =   center + width;
+
+	return vertices;
+}
+float * get_triangle_vertices(float * vertices,float x1, float y1, float x2, float y2, float x3, float y3){
+
+	if(vertices !=NULL)
+		free(vertices);
+
+	vertices = calloc(9, sizeof(float));
+	vertices[0] = 	x1;	vertices[1] =  y1;
+	vertices[3] =   x2;	vertices[4] =  y2;
+	vertices[6] = 	x3;	vertices[7] = y3;
+
+	return vertices;
+}
 
 GLuint make_buffer( GLenum target, const void *buffer_data, GLsizei buffer_size){
 	
@@ -103,7 +129,7 @@ GLuint make_shader( GLenum type, const char * filename){
 		show_info_log(shader, glGetShaderiv, glGetShaderInfoLog);
 		glDeleteShader(shader);
 		
-		return 0;
+	return 0;
 	}
 
 	return shader;
@@ -129,7 +155,60 @@ GLuint make_program(GLuint vertex_shader, GLuint fragment_shader){
 
 	return program;
 }
+int make_square_resources(float * vertices, unsigned int * square_element){
+	
+				/////////////////SQUARE\\\\\\\\\\\\\\\\\\
+		
+	square_resource.vertex_shader = make_shader( GL_VERTEX_SHADER, "src/sh_square.v.glsl");
+	if(square_resource.vertex_shader == 0)
+		return 0;
 
+	square_resource.fragment_shader = make_shader( GL_FRAGMENT_SHADER, "src/sh_square.f.glsl");
+	if(square_resource.fragment_shader == 0)
+		return 0;
+
+	square_resource.program = make_program(square_resource.vertex_shader, square_resource.fragment_shader);
+	if(square_resource.program == 0)
+		return 0;
+
+	//square_resource.attributes.position	 = glGetAttribLocation(square_resource.program, "position");
+
+
+		//	VERTEX FIRST
+	/*
+	if((errCode = glGetError()) != GL_NO_ERROR){
+		errString = gluErrorString(errCode);
+		fprintf(stderr, "OpenGL Error : %s\n", errString);
+	}
+	*/
+
+	square_resource.vertex_buffer 
+		= make_buffer( GL_ARRAY_BUFFER, vertices, sizeof(vertices) );
+	
+	//	THEN THE ELEM
+
+	square_resource.element_buffer
+		= make_buffer (GL_ELEMENT_ARRAY_BUFFER, square_element, sizeof(square_element) );
+
+	
+	//	NOW THE VERTEX
+	glVertexAttribPointer(square_resource.attributes.position, 0, GL_FLOAT, GL_FALSE, 9*sizeof(float), (void*)0);
+	glEnableVertexAttribArray(square_resource.attributes.position);
+
+	glBindBuffer(GL_ARRAY_BUFFER, square_resource.attributes.position);
+	glBindVertexArray(square_resource.attributes.position);	
+	
+
+	square_resource.attributes.position	 = glGetAttribLocation(square_resource.program, "position");
+	//	FINALLY THE SHADER
+	return 1;
+
+
+}
+int create_resources(void){
+
+
+}
 int make_resources(void){
 	
 	//	VERTEX FIRST

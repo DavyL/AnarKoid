@@ -5,22 +5,16 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+//#include "math_3d.h"
 #include "common.h"
 #include "util.h"
 //#include "draw.h"
 
-const GLfloat g_vertex_buffer_data[] = {
-		-1.0f,	-1.0f,
-		1.0f,	-1.0f,
-		-1.0f,	1.0f,
-		1.0f,	1.0f
-	};
-//Set the order in which they shall be read
-const GLushort g_element_buffer_data[] = { 0, 1, 2, 3};
+void square_render(void);
 
-struct resource g_resources;
-
-
+GLuint VBO;
+GLenum errCode;
+const GLubyte * errString;
 
 int firstPass = 1; 
 unsigned int previousTime = 0;
@@ -38,72 +32,108 @@ double position = 1;		//It's used with multiplications, make sure not to set it 
 double speed = 0.0025;
 
 struct screenInfo screen;
-
-/*void render(void){
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);	// Effacer la surface graphique
-	glutSwapBuffers();
-	
-	if (firstPass) {
-		screen = getScreenInfo(screen);
-		displayScreenInfo(screen);	
-		firstPass = 0;
-//		drawScene();
-	}
-
-	fprintf(stdout, "refresh : \t %d \n", refreshCount++);
-
-	//__glDrawSquare(200, 200, 50);	
-	glFlush();
-*/
-
-//}
 	//	BUFFER
 
+void triangle_render(void){
 
+	glClear(GL_COLOR_BUFFER_BIT);
 
-void render(void){
-	
-	glUseProgram(g_resources.program);
+	//Activating it (there is a link w/ the shader here
+	glEnableVertexAttribArray(0);
 
-	glUniform1f(g_resources.uniforms.fade_factor, g_resources.fade_factor);
+	//Binding for drawing
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, g_resources.textures[0]);
-	glUniform1i(g_resources.uniforms.textures[0], 0);
+	//Telling the pipeline how to interpret the data from the VBO
+	//the first '0', is the index of the attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, g_resources.textures[1]);
-	glUniform1i(g_resources.uniforms.textures[1], 1);
+	//And drawing
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
+	//We disable as we no longer immediately need the VBO
+	glDisableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, g_resources.vertex_buffer);
-	glVertexAttribPointer(
-			g_resources.attributes.position,	// attribute	
-			2,					//size
-			GL_FLOAT,				//type
-			GL_FALSE,				//normalized
-			sizeof(GLfloat)*2,			//stride
-			(void*)0				//array buffer offset
-			);
-
-	glEnableVertexAttribArray(g_resources.attributes.position);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_resources.element_buffer);
-	//	Display
-	glDrawElements(
-			GL_TRIANGLE_STRIP,	//mode
-			4,			//count
-			GL_UNSIGNED_SHORT,	//type
-			(void*)0
-		      );
-
-	//Cleaning up
-	glDisableVertexAttribArray(g_resources.attributes.position);
-
-	//refreshing the buffers
 	glutSwapBuffers();
-}    
+}
+
+//Creating the VBO for a triangle (3 vertices)
+void create_triangle_vertex_buffer( float * vertices){
+
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);	//VBO containing an array of vertices
+
+	//Feeding the VBO
+	glBufferData(GL_ARRAY_BUFFER, 9*sizeof(float), vertices, GL_STATIC_DRAW);
+
+}
+
+void add_shader(GLuint shader_program, const char * shader_file, GLenum shader_type){
+	
+	GLuint shader_obj = glCreateShader(shader_type);
+	if(shader_obj ==0){
+		fprintf(stderr, "Error while creating shader type %d.\n", shader_type);
+		exit(1);
+	}
+
+	//Following code loads the source shader, can be used for loading multiple sources
+	const GLchar * p[1];
+	GLint length[1];	
+	GLchar * shader_source = file_contents(shader_file, &length[0]);
+	p[0] = shader_source;
+	glShaderSource(shader_obj, 1, p, length);
+
+	//Compiling and testing the shader
+	
+	glCompileShader(shader_obj);
+
+	GLint success;
+	glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &success);
+	if(!success){
+		GLchar info_log[1024];
+		glGetShaderInfoLog(shader_obj, sizeof(info_log), NULL, info_log);
+		fprintf(stderr, "Error compiling shader type %d : %s\n", shader_type, info_log);
+	}
+
+	//Attach the shader to the program
+	glAttachShader(shader_program, shader_obj);
+
+}
+
+void compile_shaders(){
+	
+	GLuint shader_program = glCreateProgram();
+	if(shader_program ==0){
+		fprintf(stderr, "Error while creating shader program.\n");
+		exit(1);
+	}
+	
+	add_shader(shader_program, "src/shader.v.glsl", GL_VERTEX_SHADER);
+	add_shader(shader_program, "src/shader.f.glsl", GL_FRAGMENT_SHADER);
+
+	GLint success = 0;
+	GLchar error_log[1024] = { 0};
+
+	glLinkProgram(shader_program);
+	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+	if(!success){
+		glGetShaderInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+		fprintf(stderr, "Error linking shader program : %s\n", error_log);
+		exit(1);
+	}
+
+	glValidateProgram(shader_program);
+	glGetProgramiv(shader_program, GL_VALIDATE_STATUS, &success);
+	if(!success){
+		glGetShaderInfoLog(shader_program, sizeof(error_log), NULL, error_log);
+		fprintf(stderr, "Invalidshader program : %s\n", error_log);
+		exit(1);
+	}
+
+	glUseProgram(shader_program);
+}
+
+   
  void Keyboard(unsigned char key, int x, int y){
 	switch(key){ 
 		case 'q' : exit(0); 
@@ -111,44 +141,25 @@ void render(void){
 }
 void idle_func( void );
 void idle_func( void ){
-	
-	int milliseconds = glutGet(GLUT_ELAPSED_TIME);
-	g_resources.fade_factor = sinf((float)milliseconds * 0.001f) * 0.5f + 0.5f;
-	glutPostRedisplay();/*	unsigned int deltaTime = 0;
-
-	deltaTime = glutGet(GLUT_ELAPSED_TIME) - previousTime;	
-	if(deltaTime){				//Making sure that some time has elapsed, otherwise the following is pointless
-
-		previousTime+= deltaTime;
-
-		position *=(1 + (double) deltaTime * speed);
-
-		if(position >= screen.height)
-		       position = 1;			//Out of screen, returning to bottom
-
-		//radius *= (1+deltaTime);
-		//radius =  radius + radius * (double) deltaTime * speed;
-		fprintf(stdout, "deltaTime : %d\t, position : \t %f, elapsedTime : \t %d, \n previousTime : \t %d \n",deltaTime, position, glutGet(GLUT_ELAPSED_TIME), previousTime);
-	}
-		__glDrawSquare(200, (int)position, 40);
-		glFlush();	
-*/
 }
 
 
 int main(int argc, char *argv[]){
 	int win; 	
-		
+
+	float * vertices;
+	vertices = get_triangle_vertices(vertices, 0.5f, 0.5f, -0.5f, 0.5f, 0.0f, -0.5f);
+
+	//fprintf(stdout, "%f\n", vertices[0]);
+
 	glutInit(&argc, argv); 
-	glutInitDisplayMode(GLUT_RGB |GLUT_DOUBLE);
-	glutInitWindowSize(500,400);  
-	win = glutCreateWindow("Anarkoid");
+	glutInitDisplayMode(GLUT_RGBA |GLUT_DOUBLE);
+	glutInitWindowSize(500,400);
+      	glutInitWindowPosition(100, 100);	
+	win = glutCreateWindow("Anarkoid");		
 
-	glClearColor(0.9, 0.9, 0.2, 0); 	
-	gluOrtho2D(0,600,0,600);			
-
-	glutIdleFunc(&idle_func);
-	glutDisplayFunc(&render); 		
+	//glutIdleFunc(&idle_func);
+	glutDisplayFunc(triangle_render); 		
 	glutKeyboardFunc(Keyboard); 		
 
 	glewInit();
@@ -157,10 +168,11 @@ int main(int argc, char *argv[]){
 		fprintf(stderr, "OpenGL 2.0 not available\n");
 		return -1;
 	}
-	if(!make_resources()){
-		fprintf(stderr, "Failed to load resources.\n");
-		return -1;
-	}
+
+	glClearColor(0.0f, 1.0f, 1.0f, 0.0f); 			
+	create_triangle_vertex_buffer(vertices);
+
+	compile_shaders();
 
 	glutMainLoop();					
 

@@ -6,10 +6,14 @@
 
 #IncludeRegexTransform: 
 
-/home/sf/Prog/AnarKoid/src/common.c
+/home/sf/Prog/AnarKoid/src/common.h
+
+/home/sf/Prog/AnarKoid/src/main.c
 stdio.h
 -
 stdlib.h
+-
+math.h
 -
 GL/glew.h
 -
@@ -19,8 +23,6 @@ common.h
 /home/sf/Prog/AnarKoid/src/common.h
 util.h
 /home/sf/Prog/AnarKoid/src/util.h
-
-/home/sf/Prog/AnarKoid/src/common.h
 
 /home/sf/Prog/AnarKoid/src/util.h
 
