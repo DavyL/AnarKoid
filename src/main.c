@@ -10,9 +10,10 @@
 #include "util.h"
 //#include "draw.h"
 
-void square_render(void);
+void square_render(int);
 
 GLuint VBO[2];
+GLuint VAO[2];
 GLuint scale_location;
 
 int firstPass = 1; 
@@ -32,56 +33,9 @@ double position = 1;		//It's used with multiplications, make sure not to set it 
 double speed = 0.0025;
 
 struct screenInfo screen;
-	//	BUFFER
 
-void triangle_render(void){
 
-	glClear(GL_COLOR_BUFFER_BIT);
 
-	scale +=0.01f;
-
-	glUniform1f(scale_location, 3.14 + cosf(scale));
-	
-	//Activating it (there is a link w/ the shader here
-	glEnableVertexAttribArray(0);
-
-	//Binding for drawing
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-
-	//Telling the pipeline how to interpret the data from the VBO
-	//the first '0', is the index of the attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//And drawing
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	//We disable as we no longer immediately need the VBO
-	glDisableVertexAttribArray(1);
-
-//	glutSwapBuffers();
-}
-
-//Creating the VBO for a triangle (3 vertices)
-void create_triangle_vertex_buffer( float * vertices){
-
-	glGenBuffers(1, &(VBO[0]));
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);	//VBO containing an array of vertices
-
-	//Feeding the VBO
-	glBufferData(GL_ARRAY_BUFFER, 9*sizeof(float), vertices, GL_STATIC_DRAW);
-
-}
-void create_std_rectangle_vertex_buffer(){
-	float * vertices = NULL;
-	vertices = get_square_vertices(vertices, 0, 1);
-
-	glGenBuffers(1, &(VBO[1]));
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);	//VBO containing an array of vertices
-
-	//Feeding the VBO
-	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), vertices, GL_STATIC_DRAW);
-
-}
 void add_shader(GLuint shader_program, const char * shader_file, GLenum shader_type){
 	
 	GLuint shader_obj = glCreateShader(shader_type);
@@ -155,45 +109,83 @@ void compile_shaders(){
 		case 'q' : exit(0); 
 	}
 }
-void idle_func( void );
-void idle_func( void ){
-		
-	triangle_render();
+//Creating the VBO for a triangle (3 vertices)
+void create_triangle_vertex_buffer( float * vertices){
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	glGenBuffers(1, &(VBO[0]));
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);	//VBO containing an array of vertices
+
+	//Feeding the VBO
+	glBufferData(GL_ARRAY_BUFFER, 9*sizeof(float), vertices, GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &(VAO[0]));
+	glBindVertexArray(VAO[0]);
 	
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+void create_std_rectangle_vertex_buffer(){
+	float * vertices = NULL;
+	vertices = get_square_vertices(vertices, 0.5, 0.5);
+
+	glGenBuffers(1, &(VBO[1]));
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);	//VBO containing an array of vertices
+
+	//Feeding the VBO
+	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), vertices, GL_STATIC_DRAW);
+	glGenVertexArrays(1, &(VAO[1]));
+	glBindVertexArray(VAO[1]);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+}
+void triangle_render(int index){
+
+	glBindVertexArray(VAO[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void square_render(int index){
+
 	scale +=0.01f;
 
 	glUniform1f(scale_location, cosf(scale));
-	
-	//Activating it (there is a link w/ the shader here
-	glEnableVertexAttribArray(0);
 
-	//Binding for drawing
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-
-	//Telling the pipeline how to interpret the data from the VBO
-	//the first '0', is the index of the attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//And drawing
+	glBindVertexArray(VAO[1]);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+void idle_func( void );
+void idle_func( void ){
+		
+	glClear(GL_COLOR_BUFFER_BIT);
 
+	triangle_render(0);
+	square_render(1);
+
+	glBindVertexArray(0);	
 	//We disable as we no longer immediately need the VBO
 	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	glutSwapBuffers();
 
 }
 
+void init_buffers(){
+	float * vertices =NULL;
+	vertices = get_triangle_vertices(vertices, 0.5f, 0.5f, -0.5f, 0.5f, 0.0f, -0.5f);
+
+	create_triangle_vertex_buffer(vertices);
+	create_std_rectangle_vertex_buffer();
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
 
 int main(int argc, char *argv[]){
 	int win; 	
 
-	float * vertices;
-	vertices = get_triangle_vertices(vertices, 0.5f, 0.5f, -0.5f, 0.5f, 0.0f, -0.5f);
-
-	//fprintf(stdout, "%f\n", vertices[0]);
+		//fprintf(stdout, "%f\n", vertices[0]);
 
 	glutInit(&argc, argv); 
 	glutInitDisplayMode(GLUT_RGBA |GLUT_DOUBLE);
@@ -202,7 +194,7 @@ int main(int argc, char *argv[]){
 	win = glutCreateWindow("Anarkoid");		
 
 	glutIdleFunc(idle_func);
-	glutDisplayFunc(triangle_render); 		
+	glutDisplayFunc(idle_func); 		
 	glutKeyboardFunc(Keyboard); 		
 
 	glewInit();
@@ -213,8 +205,8 @@ int main(int argc, char *argv[]){
 	}
 
 	glClearColor(0.0f, 1.0f, 1.0f, 0.0f); 			
-	create_triangle_vertex_buffer(vertices);
-	create_std_rectangle_vertex_buffer();
+
+	init_buffers();
 	compile_shaders();
 
 	glutMainLoop();					
