@@ -24,7 +24,9 @@ GLuint * shader_bricks;
 GLuint * shader_scale;
 GLuint * scale_location;
 GLuint * shader_bar;
+GLuint * shader_ball;
 
+GLuint * ball_location;
 GLuint * g_world_location;
 GLuint * bar_x_pos_location;
 
@@ -34,13 +36,18 @@ GLuint BRICKS_VBO[16];
 GLuint BAR_VAO;
 GLuint BAR_VBO;
 
+GLuint BALL_VAO;
+GLuint BALL_VBO;
+
 
 
 int firstPass = 1; 
 unsigned int previousTime = 0;
 
 float scale = 0.0f;
+float time = 0.0f;
 
+int dir =1;
 //Temporary variables, used for monitoring what happens
 //Shall probably not be in the release version
 int refreshCount = 0;
@@ -54,12 +61,23 @@ double speed = 0.0025;
 
 struct screenInfo screen;
 
-
-
    
- void Keyboard(unsigned char key, int x, int y){
-	switch(key){ 
-		case 'q' : exit(0); 
+void keyboard(unsigned char key, int x, int y){
+	switch(key){	
+		case 'q' : 
+			exit(0);
+			break;	
+	}
+}
+
+void special_keyboard(int key, int x, int y){
+	switch(key){	
+		case GLUT_KEY_LEFT:
+			dir = -1;
+			break;
+		case GLUT_KEY_RIGHT:
+			dir = 1;
+			break;	
 	}
 }
 
@@ -71,6 +89,11 @@ void triangle_render(GLuint program, GLuint tr_VAO, GLuint location){
 	glBindVertexArray(tr_VAO);	
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	//glUseProgram(0);
+}
+void circle_render(GLuint program, GLuint circle_VAO, GLuint location){
+	glUseProgram(program);
+
+
 }
 void render_n_square(int n, GLuint program, GLuint * sq_VAO, GLuint location){
 
@@ -94,7 +117,6 @@ void render_n_square(int n, GLuint program, GLuint * sq_VAO, GLuint location){
 }
 void init_bricks( int n, float y, float width, float height, GLuint program, GLuint * sq_VAO, GLuint location){
 
-	scale +=0.01f;	
 
 	glUseProgram(program);
 	//glUniform1f(scale_location[0], 0.0);
@@ -113,15 +135,28 @@ void init_bricks( int n, float y, float width, float height, GLuint program, GLu
 	}
 	glUseProgram(0);
 }
-void user_bar(float x, float y, float width, GLuint program, GLuint bar_VAO, GLuint location){
+void user_bar( float x, float y, float width, GLuint program, GLuint bar_VAO, GLuint location){
 	
 	glUseProgram(program);
-
-	glUniform1f(location, cosf(scale));
+	
+	if(time + width >= 1.0f){
+		dir = -1;
+	}else if(time - width <= -1.0f){
+		dir = 1;
+	}
+	time+= ( ( float ) dir ) * 0.01f;
+	//fprintf(stdout , "time : %f", time);
+	glUniform1f(location, ( time));
 	glBindVertexArray(bar_VAO);	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
+void display_ball(GLuint program, GLuint ball_VAO, GLuint location){
+	glUniform1f(location, ( time));
+	glBindVertexArray(ball_VAO);	
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+}
+
 
 void idle_func( void );
 void idle_func( void ){
@@ -132,7 +167,8 @@ void idle_func( void ){
 	//render_n_square(12, *shader_bricks, BRICKS_VAO, *g_world_location);
 	
 	init_bricks(12, 0.75f,  0.75f *1.0f/12.0f, 0.025f,  *shader_bricks, BRICKS_VAO, *g_world_location);
-	user_bar(0, 0, 0.05f, *shader_bar, BAR_VAO, *bar_x_pos_location);
+	user_bar(0, 0, 0.15f, *shader_bar, BAR_VAO, *bar_x_pos_location);
+	display_ball(*shader_ball, BALL_VAO, *ball_location);
 	//glBindVertexArray(0);	
 	//We disable as we no longer immediately need the VBO
 	//glDisableVertexAttribArray(0);
@@ -152,6 +188,8 @@ void init_buffers(){
 	create_n_std_rectangle_vertex_buffer(12,vert, &(BRICKS_VAO[0]), &(BRICKS_VBO[0]));	
 	create_user_bar_buffer(&BAR_VAO, &BAR_VBO);
 
+	create_ball_buffer(&BALL_VAO, &BALL_VBO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -169,7 +207,8 @@ int main(int argc, char *argv[]){
 
 	glutIdleFunc(idle_func);
 	glutDisplayFunc(idle_func); 		
-	glutKeyboardFunc(Keyboard); 		
+	glutKeyboardFunc(keyboard); 		
+	glutSpecialFunc(special_keyboard); 		
 
 	glewInit();
 
@@ -193,6 +232,10 @@ int main(int argc, char *argv[]){
 	shader_bar = malloc(sizeof(GLuint));
 	bar_x_pos_location = malloc(sizeof(GLuint));
 	compile_shaders_bar(shader_bar, bar_x_pos_location);
+
+	shader_ball = malloc(sizeof(GLuint));
+	ball_location = malloc(sizeof(GLuint));
+	compile_shaders_ball(shader_ball, ball_location);
 
 	glutMainLoop();					
 

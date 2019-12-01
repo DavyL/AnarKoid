@@ -7,13 +7,13 @@
 #include "common.h"
 #include "util.h"
 
-float * get_square_vertices(float * vertices, float center, float width, float height){
+float * get_square_vertices(float * vertices, float xcenter, float ycenter, float width, float height){
 
 	vertices = calloc(12, sizeof(float));
-	vertices[0] = 	center - width;	vertices[1] = 	center - height;
-	vertices[3] =   center - width;	vertices[4] =  	center + height;
-	vertices[6] = 	center + width;	vertices[7] = 	center - height;
-	vertices[9] = 	center + width;	vertices[10] =   center + height;
+	vertices[0] = 	xcenter - width;	vertices[1] = 	ycenter - height;
+	vertices[3] =   xcenter - width;	vertices[4] =  	ycenter + height;
+	vertices[6] = 	xcenter + width;	vertices[7] = 	ycenter - height;
+	vertices[9] = 	xcenter + width;	vertices[10] =   ycenter + height;
 
 	return vertices;
 }
