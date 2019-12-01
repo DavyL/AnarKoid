@@ -169,6 +169,33 @@ anarkoid/fast:
 	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/build
 .PHONY : anarkoid/fast
 
+src/GLutils.o: src/GLutils.c.o
+
+.PHONY : src/GLutils.o
+
+# target to build an object file
+src/GLutils.c.o:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/GLutils.c.o
+.PHONY : src/GLutils.c.o
+
+src/GLutils.i: src/GLutils.c.i
+
+.PHONY : src/GLutils.i
+
+# target to preprocess a source file
+src/GLutils.c.i:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/GLutils.c.i
+.PHONY : src/GLutils.c.i
+
+src/GLutils.s: src/GLutils.c.s
+
+.PHONY : src/GLutils.s
+
+# target to generate assembly for a file
+src/GLutils.c.s:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/GLutils.c.s
+.PHONY : src/GLutils.c.s
+
 src/common.o: src/common.c.o
 
 .PHONY : src/common.o
@@ -290,6 +317,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... install/local"
 	@echo "... install"
+	@echo "... src/GLutils.o"
+	@echo "... src/GLutils.i"
+	@echo "... src/GLutils.s"
 	@echo "... src/common.o"
 	@echo "... src/common.i"
 	@echo "... src/common.s"

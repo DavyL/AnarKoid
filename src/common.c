@@ -9,9 +9,6 @@
 
 float * get_square_vertices(float * vertices, float center, float width){
 
-	if(vertices !=NULL)
-		free(vertices);
-
 	vertices = calloc(12, sizeof(float));
 	vertices[0] = 	center - width;	vertices[1] = 	center - width;
 	vertices[3] =   center - width;	vertices[4] =  	center + width;
@@ -21,9 +18,6 @@ float * get_square_vertices(float * vertices, float center, float width){
 	return vertices;
 }
 float * get_triangle_vertices(float * vertices,float x1, float y1, float x2, float y2, float x3, float y3){
-
-	if(vertices !=NULL)
-		free(vertices);
 
 	vertices = calloc(9, sizeof(float));
 	vertices[0] = 	x1;	vertices[1] =  y1;
