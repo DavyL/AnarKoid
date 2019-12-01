@@ -47,7 +47,7 @@ GLuint make_shader( GLenum type, const char * filename);
 GLuint make_texture_square( );
 int make_square_resources(float *, unsigned int *);
 
-float * get_square_vertices(float * vertices, float center, float width);
+float * get_square_vertices(float * vertices, float center, float width, float height);
 
 int make_resources(void);
 

@@ -277,6 +277,33 @@ src/main.c.s:
 	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/main.c.s
 .PHONY : src/main.c.s
 
+src/matrixUtils.o: src/matrixUtils.c.o
+
+.PHONY : src/matrixUtils.o
+
+# target to build an object file
+src/matrixUtils.c.o:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/matrixUtils.c.o
+.PHONY : src/matrixUtils.c.o
+
+src/matrixUtils.i: src/matrixUtils.c.i
+
+.PHONY : src/matrixUtils.i
+
+# target to preprocess a source file
+src/matrixUtils.c.i:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/matrixUtils.c.i
+.PHONY : src/matrixUtils.c.i
+
+src/matrixUtils.s: src/matrixUtils.c.s
+
+.PHONY : src/matrixUtils.s
+
+# target to generate assembly for a file
+src/matrixUtils.c.s:
+	$(MAKE) -f CMakeFiles/anarkoid.dir/build.make CMakeFiles/anarkoid.dir/src/matrixUtils.c.s
+.PHONY : src/matrixUtils.c.s
+
 src/util.o: src/util.c.o
 
 .PHONY : src/util.o
@@ -329,6 +356,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/matrixUtils.o"
+	@echo "... src/matrixUtils.i"
+	@echo "... src/matrixUtils.s"
 	@echo "... src/util.o"
 	@echo "... src/util.i"
 	@echo "... src/util.s"

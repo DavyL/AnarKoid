@@ -3,6 +3,7 @@
 
 CMakeFiles/anarkoid.dir/src/GLutils.c.o
  /home/sf/Prog/AnarKoid/src/GLutils.c
+ /home/sf/Prog/AnarKoid/src/GLutils.h
  /home/sf/Prog/AnarKoid/src/common.h
  /home/sf/Prog/AnarKoid/src/util.h
 CMakeFiles/anarkoid.dir/src/common.c.o
@@ -16,6 +17,10 @@ CMakeFiles/anarkoid.dir/src/main.c.o
  /home/sf/Prog/AnarKoid/src/GLutils.h
  /home/sf/Prog/AnarKoid/src/common.h
  /home/sf/Prog/AnarKoid/src/main.c
+ /home/sf/Prog/AnarKoid/src/matrixUtils.h
  /home/sf/Prog/AnarKoid/src/util.h
+CMakeFiles/anarkoid.dir/src/matrixUtils.c.o
+ /home/sf/Prog/AnarKoid/src/matrixUtils.c
+ /home/sf/Prog/AnarKoid/src/matrixUtils.h
 CMakeFiles/anarkoid.dir/src/util.c.o
  /home/sf/Prog/AnarKoid/src/util.c

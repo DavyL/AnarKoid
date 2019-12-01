@@ -9,6 +9,7 @@
 #include "common.h"
 #include "util.h"
 #include "GLutils.h"
+#include "matrixUtils.h"
 //#include "draw.h"
 
 void square_render(int);
@@ -22,16 +23,18 @@ GLuint * shader_bricks;
 
 GLuint * shader_scale;
 GLuint * scale_location;
+GLuint * shader_bar;
 
 GLuint * g_world_location;
+GLuint * bar_x_pos_location;
 
 GLuint BRICKS_VAO[16];
 GLuint BRICKS_VBO[16];
 
-struct Matrix4f{
-	float m[4][4];
-};
-//struct Matrix4f World;
+GLuint BAR_VAO;
+GLuint BAR_VBO;
+
+
 
 int firstPass = 1; 
 unsigned int previousTime = 0;
@@ -69,20 +72,40 @@ void triangle_render(GLuint program, GLuint tr_VAO, GLuint location){
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	//glUseProgram(0);
 }
-
 void render_n_square(int n, GLuint program, GLuint * sq_VAO, GLuint location){
 
 	scale +=0.01f;	
 
 	glUseProgram(program);
 	//glUniform1f(scale_location[0], 0.0);
-	struct Matrix4f World;
-	World.m[0][0] = 1.0f; World.m[0][1] = 0.0f; World.m[0][2] = 0.0f; World.m[0][3] = sinf(scale);
-	World.m[1][0] = 0.0f; World.m[1][1] = 1.0f; World.m[1][2] = 0.0f; World.m[1][3] = 0.0f;
-	World.m[2][0] = 0.0f; World.m[2][1] = 0.0f; World.m[2][2] = 1.0f; World.m[2][3] = 0.0f;
-	World.m[3][0] = 0.0f; World.m[3][1] = 0.0f; World.m[3][2] = 0.0f; World.m[3][3] = 1.0f;	
+	struct Matrix4f World = new_identity_matrix();
+	//World = translate_matrix(World, sinf(scale), (float)i/12, 0);
+	World = scale_matrix(World, 0.25f, 0.01f, 0.0f);
+	
 	int i = 0;
 	for(i =0; i<n; i++){
+		glUniformMatrix4fv(location, 1, GL_TRUE, &World.m[0][0]);
+		World = translate_matrix(World, sinf(scale), (float)i/12, 0);
+		//glUniform1f(location, cosf(scale*i/n));
+		glBindVertexArray(sq_VAO[i]);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
+	glUseProgram(0);
+}
+void init_bricks( int n, float y, float width, float height, GLuint program, GLuint * sq_VAO, GLuint location){
+
+	scale +=0.01f;	
+
+	glUseProgram(program);
+	//glUniform1f(scale_location[0], 0.0);
+	struct Matrix4f World = new_identity_matrix();
+	//World = translate_matrix(World, sinf(scale), (float)i/12, 0);
+	World = scale_matrix(World, width, height, 0.0f);
+	
+	int i = 0;
+	for(i =0; i<n; i++){
+		//World = translate_matrix(World, 0, 0, 0);
+		World = translate_matrix(World, (3.0f/2.0f)*width+ 2*((float) i)/((float) n) - 1.0f, y, 0);
 		glUniformMatrix4fv(location, 1, GL_TRUE, &World.m[0][0]);
 		//glUniform1f(location, cosf(scale*i/n));
 		glBindVertexArray(sq_VAO[i]);
@@ -90,14 +113,26 @@ void render_n_square(int n, GLuint program, GLuint * sq_VAO, GLuint location){
 	}
 	glUseProgram(0);
 }
+void user_bar(float x, float y, float width, GLuint program, GLuint bar_VAO, GLuint location){
+	
+	glUseProgram(program);
+
+	glUniform1f(location, cosf(scale));
+	glBindVertexArray(bar_VAO);	
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+}
+
 void idle_func( void );
 void idle_func( void ){
 		
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	triangle_render(*shader_scale, VAO[0], *scale_location);
-	render_n_square(12, *shader_bricks, BRICKS_VAO, *g_world_location);
-
+	//render_n_square(12, *shader_bricks, BRICKS_VAO, *g_world_location);
+	
+	init_bricks(12, 0.75f,  0.75f *1.0f/12.0f, 0.025f,  *shader_bricks, BRICKS_VAO, *g_world_location);
+	user_bar(0, 0, 0.05f, *shader_bar, BAR_VAO, *bar_x_pos_location);
 	//glBindVertexArray(0);	
 	//We disable as we no longer immediately need the VBO
 	//glDisableVertexAttribArray(0);
@@ -115,6 +150,8 @@ void init_buffers(){
 //	create_std_rectangle_vertex_buffer();
 	float * vert[12];
 	create_n_std_rectangle_vertex_buffer(12,vert, &(BRICKS_VAO[0]), &(BRICKS_VBO[0]));	
+	create_user_bar_buffer(&BAR_VAO, &BAR_VBO);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -152,6 +189,10 @@ int main(int argc, char *argv[]){
 
 	shader_scale = malloc(sizeof(GLuint));
 	compile_shaders_scale(shader_scale, scale_location);
+
+	shader_bar = malloc(sizeof(GLuint));
+	bar_x_pos_location = malloc(sizeof(GLuint));
+	compile_shaders_bar(shader_bar, bar_x_pos_location);
 
 	glutMainLoop();					
 
