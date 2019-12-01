@@ -18,6 +18,9 @@ GLuint shader_bricks;
 GLuint shader_scale;
 GLuint scale_location[2];
 
+GLuint BRICKS_VAO[16];
+GLuint BRICKS_VBO[16];
+
 int firstPass = 1; 
 unsigned int previousTime = 0;
 
@@ -183,6 +186,34 @@ void create_std_rectangle_vertex_buffer(){
 	glEnableVertexAttribArray(0);
 	
 }
+void create_n_std_rectangle_vertex_buffer(int n, GLuint * sq_VAO, GLuint * sq_VBO){
+	float * vertices[n];
+	//vertices = get_square_vertices(vertices, 0.0, 1.0);
+	int i = 0;
+
+	//glGenVertexArrays(n, sq_VAO);
+	
+	//glBindVertexArray(*sq_VAO);
+
+	//glGenBuffers(n, sq_VBO);
+
+	for(i = 0; i<n ; i++){
+	
+		glGenVertexArrays(1, &(sq_VAO[i]));
+		glBindVertexArray(sq_VAO[i]);
+		glGenBuffers(1, &(sq_VBO[i]));
+	
+		glBindBuffer(GL_ARRAY_BUFFER, sq_VBO[i]);	//VBO containing an array of vertices
+		//Feeding the VBO
+		vertices[i] = NULL;
+		vertices[i] = get_square_vertices(vertices[i], (float) 2*i/16, 0.05);
+		glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), vertices[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(0);
+	}
+	
+	
+}
 void triangle_render(int index){
 
 	glUseProgram(shader_scale);
@@ -197,9 +228,13 @@ void square_render(int index){
 	scale +=0.01f;	
 
 	glUseProgram(shader_bricks);
-	glUniform1f(scale_location[1], -cosf(scale));
-	glBindVertexArray(VAO[1]);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	//glUniform1f(scale_location[0], 0.0);
+		int i = 0;
+	for(i =0; i<12; i++){
+		glUniform1f(scale_location[0], cosf(i);
+		glBindVertexArray(BRICKS_VAO[i]);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
 	glUseProgram(0);
 }
 void idle_func( void );
@@ -224,8 +259,8 @@ void init_buffers(){
 	vertices = get_triangle_vertices(vertices, 0.5f, 0.5f, -0.5f, 0.5f, 0.0f, -0.5f);
 
 	create_triangle_vertex_buffer(vertices);
-	create_std_rectangle_vertex_buffer();
-	
+//	create_std_rectangle_vertex_buffer();
+	create_n_std_rectangle_vertex_buffer(12, &(BRICKS_VAO[0]), &(BRICKS_VBO[0]));	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
