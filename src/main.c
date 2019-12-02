@@ -149,15 +149,14 @@ void user_bar( float x, float y, float width, GLuint program, GLuint bar_VAO, GL
 	glUniform1f(location, ( time));
 	glBindVertexArray(bar_VAO);	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
+	glUseProgram(0);
 }
 void display_ball(GLuint program, GLuint ball_VAO, GLuint location){
-	glUniform1f(location, ( time));
+	glUseProgram(program);
 	glBindVertexArray(ball_VAO);	
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 20);
+	glUseProgram(0);
 }
-
-
 void idle_func( void );
 void idle_func( void ){
 		
@@ -169,12 +168,7 @@ void idle_func( void ){
 	init_bricks(12, 0.75f,  0.75f *1.0f/12.0f, 0.025f,  *shader_bricks, BRICKS_VAO, *g_world_location);
 	user_bar(0, 0, 0.15f, *shader_bar, BAR_VAO, *bar_x_pos_location);
 	display_ball(*shader_ball, BALL_VAO, *ball_location);
-	//glBindVertexArray(0);	
-	//We disable as we no longer immediately need the VBO
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-
-	glutSwapBuffers();
+		glutSwapBuffers();
 
 }
 
@@ -188,7 +182,8 @@ void init_buffers(){
 	create_n_std_rectangle_vertex_buffer(12,vert, &(BRICKS_VAO[0]), &(BRICKS_VBO[0]));	
 	create_user_bar_buffer(&BAR_VAO, &BAR_VBO);
 
-	create_ball_buffer(&BALL_VAO, &BALL_VBO);
+	create_n_ball_buffer(20, &BALL_VAO, &BALL_VBO);
+	//create_ball_buffer( &BALL_VAO, &BALL_VBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

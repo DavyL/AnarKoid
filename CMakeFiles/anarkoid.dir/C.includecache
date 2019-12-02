@@ -6,25 +6,31 @@
 
 #IncludeRegexTransform: 
 
-/home/sf/Prog/AnarKoid/src/GLutils.c
+/home/sf/Prog/AnarKoid/src/GLutils.h
+
+/home/sf/Prog/AnarKoid/src/common.h
+
+/home/sf/Prog/AnarKoid/src/main.c
 stdio.h
 -
 stdlib.h
+-
+math.h
 -
 GL/glew.h
 -
 GL/glut.h
 -
-GLutils.h
-/home/sf/Prog/AnarKoid/src/GLutils.h
 common.h
 /home/sf/Prog/AnarKoid/src/common.h
 util.h
 /home/sf/Prog/AnarKoid/src/util.h
-
+GLutils.h
 /home/sf/Prog/AnarKoid/src/GLutils.h
+matrixUtils.h
+/home/sf/Prog/AnarKoid/src/matrixUtils.h
 
-/home/sf/Prog/AnarKoid/src/common.h
+/home/sf/Prog/AnarKoid/src/matrixUtils.h
 
 /home/sf/Prog/AnarKoid/src/util.h
 
